@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 import * as firebase from 'firebase';
 import { map } from 'rxjs/operators';
 import { User } from './user.model';
-import { SetUserAction } from './auth.actions';
+import { SetUserAction, UnsetUserAction } from './auth.actions';
 import { Subscription } from 'rxjs';
 
 @Injectable({
@@ -24,6 +24,7 @@ export class AuthService {
   // Vereficara cuando un usuario sufre un cambio desde firebase
   // Prevenir si que tengamos muchos usuarios conectados
   private userSubscription: Subscription = new Subscription();
+  private usuario: User;
   constructor(
     private afAuth: AngularFireAuth,
     private router: Router,
@@ -45,12 +46,14 @@ export class AuthService {
             // Aca imprimo el objeto de firebase
             // console.log(usuarioObj);
             const newUser = new User(usuarioObj);
-            console.log(newUser);
+            /* console.log(newUser); */
             this.store.dispatch(new SetUserAction(newUser));
+            this.usuario = newUser;
           });
       } else {
         // cancelamos la subscription si el usuario se ha desconectado
         this.userSubscription.unsubscribe();
+        this.usuario = null;
       }
     });
   }
@@ -110,6 +113,7 @@ export class AuthService {
 
   logout(): void {
     this.afAuth.signOut();
+    this.store.dispatch( new UnsetUserAction());
   }
 
   // tslint:disable-next-line: typedef
@@ -125,5 +129,9 @@ export class AuthService {
         return fbUser != null;
       })
     );
+  }
+
+  getUsuario(): any{
+    return {...this.usuario};
   }
 }

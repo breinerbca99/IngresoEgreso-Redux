@@ -5,8 +5,8 @@ export class User {
 
   constructor(obj: DataObj) {
     this.nombre = obj && obj.nombre || null;
-    this.email = obj && obj.uid || null;
-    this.uid = obj && obj.email || null;
+    this.uid = obj && obj.uid || null;
+    this.email = obj && obj.email || null;
   }
 }
 
